@@ -1,0 +1,18 @@
+# env files
+*.env
+
+# db
+app.db
+
+# jupyter working and testing files
+*.ipynb
+*.ipynb_checkpoints
+
+# __pychache__
+__pycache__
+
+# vscode settings
+.vscode
+
+# venv
+venv
