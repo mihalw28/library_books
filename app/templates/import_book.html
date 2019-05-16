@@ -2,7 +2,7 @@
 
 {% block content %}
     <h1>Aby zaimportować książki do biblioteki, wypęłnij formularz</h1>
-    <form action="" nethod="post" novalidate>
+    <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
         <p> 
             {{ form.intitle.label }}<br>
@@ -41,4 +41,14 @@
         </p>
         <p>{{ form.submit() }}</p>
     </form>
+    <p>
+        {% if "{{ session['url'] }}" %}
+            <form method="POST" action="{{ url_for('import_all') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"></input>
+                <button type="submit" class="btn btn-warning">Importuj</button>
+            </form>
+        {% else %}
+            <button type="submit" class="btn btn-success" disabled>Importuj</button>
+        {% endif %}
+    </p>
 {% endblock %}

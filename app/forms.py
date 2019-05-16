@@ -24,7 +24,8 @@ class ImportBooks(FlaskForm):
     inpublisher = StringField("Wydawca")
     subject = StringField("Kategoria")
     isbn = StringField("ISBN")
-    submit = SubmitField("Importuj")
+    submit = SubmitField("Zatwierdź")
 
 
+# To do:
 # class ShowAllBooks(FlaskForm):

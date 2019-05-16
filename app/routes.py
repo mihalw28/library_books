@@ -1,7 +1,7 @@
 import json
 
 import requests
-from flask import flash, redirect, render_template, url_for
+from flask import flash, redirect, render_template, url_for, session
 
 from app import app, db
 from app.forms import AddBook, ImportBooks
@@ -16,6 +16,7 @@ def index():
 
 @app.route("/add_book", methods=["GET", "POST"])
 def add_book():
+    """A function that adds a new book to library with data from AddBook form."""
     form = AddBook()
     if form.validate_on_submit():
         title = form.title.data
@@ -33,6 +34,7 @@ def add_book():
 
 @app.route("/import_books", methods=["GET", "POST"])
 def import_books():
+    "A function that creates url based on data from user typed in ImportBooks form."
     form = ImportBooks()
     base_url = "https://www.googleapis.com/books/v1/volumes?q="
     new_list = []
@@ -51,11 +53,21 @@ def import_books():
             else:
                 new_list.append(f"{key}:{val}")
         url_rest = "+".join(new_list)
-        response = requests.get(
-            base_url + url_rest
-        )  # To do: solve problem wih credentials
-        result = json.loads(response.text)
-        for i in range(len(result["items"])):
+        url = base_url + url_rest
+        session["url"] = url
+    return render_template("import_book.html", title="import", form=form)
+
+
+@app.route("/import_all", methods=["GET", "POST"])
+def import_all():
+    """A function that saved books to db based on url from import_books."""
+    response = requests.get(session["url"])
+    result = response.json()
+    if result['totalItems'] == 0:
+        flash("Okazuje się, że żadne książki nie spełniają podanych kryteriów. Spróbuj jeszcze raz.")
+    else:
+        how_many = len(result["items"])
+        for i in range(how_many):
             info = result["items"][i]["volumeInfo"]
             title = info["title"]
             authors = info["authors"]
@@ -68,17 +80,13 @@ def import_books():
             else:
                 description = ""
             add_to_db(title, description, authors, subject)
-            flash(
-                "Wygląda na to, że wszystko dobrze poszło i dodałaś/eś książkie do biblioteki."
-            )
-        return redirect(url_for("index"))
-    return render_template("import_book.html", title="Import", form=form)
+        flash(f"Wygląda na to, że wszystko dobrze poszło i dodałaś/eś {how_many} książek do biblioteki.")
+    # session.pop()
+    return redirect(url_for("import_books"))
 
 
 def add_to_db(title, description, author, category):
-    """
-    Deals with input data if there are many authors or categories.
-    """
+    """This function solves issues with input data if there are many authors or categories."""
     au_list = []
     cat_list = []
     book = Book(title=title, description=description)
