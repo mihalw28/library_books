@@ -8,9 +8,10 @@
     </head>
     <body>
         <div>
-            Book shelf: 
-            <a href="{{ url_for("index") }}">Home</a>
-            <a href="{{ url_for("add_book") }}">Add book</a>
+            Biblioteka: 
+            <a href="{{ url_for("index") }}">Dostępne</a>
+            <a href="{{ url_for("add_book") }}">Dodaj</a>
+            <a href="{{ url_for("import_books") }}">Importuj</a>
         </div>
         <hr>
         {% with messages = get_flashed_messages() %}

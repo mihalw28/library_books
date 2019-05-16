@@ -1,8 +1,11 @@
-from flask import render_template, flash, redirect, url_for
-from app import app
-from app.forms import AddBook, ImportBooks
 import json
+
 import requests
+from flask import flash, redirect, render_template, url_for, session
+
+from app import app, db
+from app.forms import AddBook, ImportBooks
+from app.models import Author, Book, Category
 
 
 @app.route("/")
@@ -13,8 +16,14 @@ def index():
 
 @app.route("/add_book", methods=["GET", "POST"])
 def add_book():
+    """A function that adds a new book to library with data from AddBook form."""
     form = AddBook()
     if form.validate_on_submit():
+        title = form.title.data
+        description = form.description.data
+        author = form.author.data.split(", ")  # For more than one author.
+        category = form.category.data.split(", ")  # The same.
+        add_to_db(title, description, author, category)
         flash(
             "Wygląda na to, że wszystko poszło dobrze i dodałaś/eś książkę do \
             biblioteki."
@@ -23,8 +32,9 @@ def add_book():
     return render_template("add_book.html", title="Add new book", form=form)
 
 
-@app.route("/import_books", method=["GET", "POST"])
+@app.route("/import_books", methods=["GET", "POST"])
 def import_books():
+    "A function that creates url based on data from user typed in ImportBooks form."
     form = ImportBooks()
     base_url = "https://www.googleapis.com/books/v1/volumes?q="
     new_list = []
@@ -43,27 +53,52 @@ def import_books():
             else:
                 new_list.append(f"{key}:{val}")
         url_rest = "+".join(new_list)
-    response = requests.get(base_url + url_rest)
-    result = json.loads(response.text)
-    return result
+        url = base_url + url_rest
+        session["url"] = url
+    return render_template("import_book.html", title="import", form=form)
 
 
-def clean_json(result):
-    """
-    Cleaning raw json results to extract 3 parameters.
-    """
-    for i in range(len(result["items"])):
-        info = result['items'][i]['volumeInfo']
-        title = info['title']
-        authors = info["authors"]
-        if "categories" in info:
-            subject = info["categories"]
-        else: 
-            subject = ""
-        if "description" in info:
-            description = info["description"]
-        else:
-            description = ""
-        return title, authors, subject, description
+@app.route("/import_all", methods=["GET", "POST"])
+def import_all():
+    """A function that saved books to db based on url from import_books."""
+    response = requests.get(session["url"])
+    result = response.json()
+    if result['totalItems'] == 0:
+        flash("Okazuje się, że żadne książki nie spełniają podanych kryteriów. Spróbuj jeszcze raz.")
+    else:
+        how_many = len(result["items"])
+        for i in range(how_many):
+            info = result["items"][i]["volumeInfo"]
+            title = info["title"]
+            authors = info["authors"]
+            if "categories" in info:
+                subject = info["categories"]
+            else:
+                subject = ""
+            if "description" in info:
+                description = info["description"]
+            else:
+                description = ""
+            add_to_db(title, description, authors, subject)
+        flash(f"Wygląda na to, że wszystko dobrze poszło i dodałaś/eś {how_many} książek do biblioteki.")
+    # session.pop()
+    return redirect(url_for("import_books"))
 
 
+def add_to_db(title, description, author, category):
+    """This function solves issues with input data if there are many authors or categories."""
+    au_list = []
+    cat_list = []
+    book = Book(title=title, description=description)
+    for auth in author:
+        au = Author(full_name=auth)
+        db.session.add(au)
+        au_list.append(au)
+    for cats in category:
+        cat = Category(category_name=cats)
+        db.session.add(cat)
+        cat_list.append(cat)
+    book.book_authors.extend(au_list)
+    book.book_categories.extend(cat_list)
+    db.session.commit()
+    return

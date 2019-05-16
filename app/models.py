@@ -4,18 +4,14 @@ from app import db
 book_author_helper = db.Table(
     "book_author",
     db.Column("author_id", db.Integer, db.ForeignKey("author.id"), primary_key=True),
-    db.Column(
-        "book_id", db.Integer, db.ForeignKey("book.id"), primary_key=True
-    ),
+    db.Column("book_id", db.Integer, db.ForeignKey("book.id"), primary_key=True),
 )
 
 
 book_category_helper = db.Table(
     "book_category",
     db.Column("book_id", db.Integer, db.ForeignKey("book.id"), primary_key=True),
-    db.Column(
-        "category_id", db.Integer, db.ForeignKey("category.id"), primary_key=True
-    ),
+    db.Column("category_id", db.Integer, db.ForeignKey("category.id"), primary_key=True),
 )
 
 
@@ -31,7 +27,7 @@ class Book(db.Model):
         lazy="subquery",
         backref=db.backref("books"),
     )
-    
+
     book_categories = db.relationship(
         "Category",
         secondary=book_category_helper,
