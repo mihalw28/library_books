@@ -11,6 +11,7 @@
             Book shelf: 
             <a href="{{ url_for("index") }}">Home</a>
             <a href="{{ url_for("add_book") }}">Add book</a>
+            <a href="{{ url_for("import_books") }}">Import</a>
         </div>
         <hr>
         {% with messages = get_flashed_messages() %}

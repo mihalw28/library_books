@@ -1,14 +1,21 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
-from wtforms.validators import DataRequired
+from wtforms import StringField, SubmitField, TextAreaField
+from wtforms.validators import DataRequired, ValidationError
+
+from app.models import Book
 
 
 class AddBook(FlaskForm):
     title = StringField("Tytuł kasiążki", validators=[DataRequired()])
     author = StringField("Autor", validators=[DataRequired()])
     category = StringField("Kategoria", validators=[DataRequired()])
-    description = StringField("Opis", validators=[DataRequired()])
+    description = TextAreaField("Opis", validators=[DataRequired()])
     submit = SubmitField("Dodaj do biblioteki!")
+
+    def validate_book_title(self, title):
+        book = Book.query.filter_by(title=title.data).first()
+        if book is not None:
+            raise ValidationError("Książka o takim tytule już znajduje się już w bazie.")
 
 
 class ImportBooks(FlaskForm):
@@ -17,7 +24,7 @@ class ImportBooks(FlaskForm):
     inpublisher = StringField("Wydawca")
     subject = StringField("Kategoria")
     isbn = StringField("ISBN")
-    submit = SubmitField("Szukaj")
+    submit = SubmitField("Importuj")
 
 
 # class ShowAllBooks(FlaskForm):
