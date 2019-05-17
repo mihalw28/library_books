@@ -35,8 +35,17 @@ class Book(db.Model):
         backref=db.backref("books", lazy=True),
     )
 
+    def __init__(self, title, description, book_authors=[], book_categories=[]):
+        self.title = title
+        self.description = description
+        self.book_authors = book_authors
+        self.book_categories = book_categories
+
     def __repr__(self):
-        return f"<Book {self.title}>"
+        return f"{self.__class__.__name__}({self.title})"
+
+    def __str__(self):
+        return f"{self.title}"
 
 
 class Author(db.Model):
@@ -45,7 +54,10 @@ class Author(db.Model):
     full_name = db.Column(db.String)
 
     def __repr__(self):
-        return f"<Author {self.full_name}>"
+        return f"{self.__class__.__name__}({self.full_name})"
+
+    def __str__(self):
+        return f"{self.full_name}"
 
 
 class Category(db.Model):
@@ -54,4 +66,7 @@ class Category(db.Model):
     category_name = db.Column(db.String)
 
     def __repr__(self):
-        return f"<Category {self.category_name}>"
+        return f"{self.__class__.__name__}({self.category_name})"
+
+    def __str__(self):
+        return f"{self.category_name}"

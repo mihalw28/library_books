@@ -11,6 +11,7 @@ from app.models import Author, Book, Category
 @app.route("/")
 @app.route("/index")
 def index():
+    books = Book.query.all()
     return render_template("index.html", title="Book list")
 
 
@@ -34,7 +35,7 @@ def add_book():
 
 @app.route("/import_books", methods=["GET", "POST"])
 def import_books():
-    "A function that creates url based on data from user typed in ImportBooks form."
+    """A function that creates url based on data from user typed in ImportBooks form."""
     form = ImportBooks()
     base_url = "https://www.googleapis.com/books/v1/volumes?q="
     new_list = []
@@ -70,18 +71,21 @@ def import_all():
         for i in range(how_many):
             info = result["items"][i]["volumeInfo"]
             title = info["title"]
-            authors = info["authors"]
-            if "categories" in info:
+            try:
+                authors = info["authors"]
+            except KeyError:
+                authors = "" 
+            try:
                 subject = info["categories"]
-            else:
+            except KeyError: 
                 subject = ""
-            if "description" in info:
+            try:
                 description = info["description"]
-            else:
+            except KeyError:
                 description = ""
             add_to_db(title, description, authors, subject)
         flash(f"Wygląda na to, że wszystko dobrze poszło i dodałaś/eś {how_many} książek do biblioteki.")
-    # session.pop()
+    # session.clear()
     return redirect(url_for("import_books"))
 
 

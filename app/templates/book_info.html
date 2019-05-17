@@ -1,0 +1,12 @@
+<table class="table table-hover">
+    <tr>
+        <td>
+            <ul>
+                <li>Title : {{ bk.title }}</li>
+                <li>Authors : {{ bk.book_authors|join(", ") }}</li>
+                <li>Categories : {{ bk.book_categories|join(", ") }}</li>
+                <li>Description : {{ bk.description }}</li>
+            </ul>
+        </td>
+    </tr>
+</table>
