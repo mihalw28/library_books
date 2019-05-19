@@ -25,7 +25,7 @@ class Book(db.Model):
         "Author",
         secondary=book_author_helper,
         lazy="subquery",
-        backref=db.backref("books"),
+        backref=db.backref("books", lazy=True),  # was without it
     )
 
     book_categories = db.relationship(
@@ -35,14 +35,8 @@ class Book(db.Model):
         backref=db.backref("books", lazy=True),
     )
 
-    def __init__(self, title, description, book_authors=[], book_categories=[]):
-        self.title = title
-        self.description = description
-        self.book_authors = book_authors
-        self.book_categories = book_categories
-
     def __repr__(self):
-        return f"{self.__class__.__name__}({self.title})"
+        return f"<{self.__class__.__name__}({self.title})>"
 
     def __str__(self):
         return f"{self.title}"
@@ -54,7 +48,7 @@ class Author(db.Model):
     full_name = db.Column(db.String)
 
     def __repr__(self):
-        return f"{self.__class__.__name__}({self.full_name})"
+        return f"<{self.__class__.__name__}({self.full_name})>"
 
     def __str__(self):
         return f"{self.full_name}"
@@ -66,7 +60,7 @@ class Category(db.Model):
     category_name = db.Column(db.String)
 
     def __repr__(self):
-        return f"{self.__class__.__name__}({self.category_name})"
+        return f"<{self.__class__.__name__}({self.category_name})>"
 
     def __str__(self):
         return f"{self.category_name}"

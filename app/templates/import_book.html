@@ -9,7 +9,7 @@
         </div>
     </div>
     <p>
-        {% if False %}
+        {% if "url" in session %}
             <form method="POST" action="{{ url_for('import_all') }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"></input>
                 <button type="submit" class="btn btn-success">Importuj</button>
