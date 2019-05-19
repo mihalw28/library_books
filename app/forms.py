@@ -13,7 +13,9 @@ class AddBook(FlaskForm):
         description='Np. "Elon Musk, Jeff Bezos"',
     )
     category = StringField(
-        "Kategoria", validators=[DataRequired()], description="Przynajmniej jedna kategoria."
+        "Kategoria",
+        validators=[DataRequired()],
+        description="Przynajmniej jedna kategoria.",
     )
     description = TextAreaField("Opis", validators=[DataRequired()])
     submit = SubmitField("Dodaj do biblioteki!")

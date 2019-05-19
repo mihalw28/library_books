@@ -1,10 +1,10 @@
 import json
 
 import requests
-from flask import flash, redirect, render_template, url_for, session, request
+from flask import flash, redirect, render_template, request, session, url_for
 
 from app import app, db
-from app.forms import AddBook, ImportBooks, FilterBooks
+from app.forms import AddBook, FilterBooks, ImportBooks
 from app.models import Author, Book, Category
 
 
@@ -22,11 +22,7 @@ def index():
         filter_list = [filter_a_str, filter_c_str]
         session["fl_lst"] = filter_list
         return redirect(url_for("filtered_books"))
-    return render_template(
-        "index.html", 
-        title="Filter", 
-        form=form,
-    )
+    return render_template("index.html", title="Filter", form=form)
 
 
 @app.route("/filtered_books", methods=["GET"])
@@ -41,7 +37,10 @@ def filtered_books():
     else:
         bks = Book.query.order_by(Book.title)
     if len(bks.all()) == 0:
-        flash ("Niestety żadne książki z biblioteki nie spełniają kryteriów filtrowania.", "error")
+        flash(
+            "Niestety żadne książki z biblioteki nie spełniają kryteriów filtrowania.",
+            "error",
+        )
     books = bks.paginate(page, app.config["BOOKS_PER_PAGE"], False)
     next_page = url_for("filtered_books", page=books.next_num) if books.has_next else None
     prev_page = url_for("filtered_books", page=books.prev_num) if books.has_prev else None
