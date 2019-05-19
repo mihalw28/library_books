@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block app_content %}
+<div>   
+    <p>
+        Poniżej znajdują się książki przefiltrwane według zadanych wcześniej kryteriów.
+    </p>
+</div>
+<ul class="list-group list-group-flush">
+    <li class="list-group-item">
+        {% for bk in books.items %}
+            {% include "book_info.html" %}
+        {% endfor %}
+    </li>
+</ul>
+<nav aria-label="...">
+    <ul class="pagination">
+        <li class="previous{% if not prev_page %} disabled{% endif %}">
+            <a href="{{ prev_page or '#' }}">
+                <span aria-hidden="true">&larr;</span>Poprzednia strona
+            </a>
+        </li>
+        <li class="next{% if not next_page %} disabled{% endif %}">
+            <a href="{{ next_page or '#' }}">Następna Strona
+                <span aria-hidden="true">&rarr;</span>
+            </a>
+        </li>
+    </ul>
+</nav> 
+{% endblock %}
