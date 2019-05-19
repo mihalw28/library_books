@@ -1,28 +1,46 @@
-<html>
-    <head>
-        {% if title %}
-        <title>{{ title }} - book shelf</title>
-        {% else %}
-        <title> Welcome to your book shelf </title>
-        {% endif %}
-    </head>
-    <body>
-        <div>
-            Biblioteka: 
-            <a href="{{ url_for("index") }}">Dostępne</a>
-            <a href="{{ url_for("add_book") }}">Dodaj</a>
-            <a href="{{ url_for("import_books") }}">Importuj</a>
-        </div>
-        <hr>
-        {% with messages = get_flashed_messages() %}
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+        {% if title %}{{ title }} - book shelf{% else %}Welcome to your book shelf{% endif %}
+{% endblock %}
+
+{% block navbar %}
+    <nav class="navbar navbar-default">
+        <nav class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-left">
+                    <li><a href="{{ url_for("index") }}">Dostępne</a></li>
+                    <li><a href="{{ url_for("add_book") }}">Dodaj</a></li>
+                    <li><a href="{{ url_for("import_books") }}">Importuj</a></li>
+                </ul>
+            </div>
+        </nav>
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-        <ul>
-            {% for message in messages %}
-            <li>{{ message }}</li>
+            {% for category, message in messages %}
+                {% if category == "success" %}
+                    <div class="alert alert-success" role="alert">{{ message }}</div>
+                {% endif%}
+                {% if category == "error" %}
+                    <div class="alert alert-danger" role="alert">{{ message }}</div>
+                {% endif%}
             {% endfor %}
-        </ul>
         {% endif %}
         {% endwith %}
-        {% block content %}{% endblock %}
-    </body>
-</html>
+
+        {% block app_content %}{% endblock %}
+    </div>
+{% endblock %}

@@ -2,20 +2,21 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, ValidationError
 
-from app.models import Book
+from app.models import Book, Author, Category
 
 
 class AddBook(FlaskForm):
-    title = StringField("Tytuł kasiążki", validators=[DataRequired()])
-    author = StringField("Autor", validators=[DataRequired()])
-    category = StringField("Kategoria", validators=[DataRequired()])
+    title = StringField("Tytuł książki", validators=[DataRequired()])
+    author = StringField(
+        "Autor/Autorzy",
+        validators=[DataRequired()],
+        description='Np. "Elon Musk, Jeff Bezos"',
+    )
+    category = StringField(
+        "Kategoria", validators=[DataRequired()], description="Przynajmniej jedna kategoria."
+    )
     description = TextAreaField("Opis", validators=[DataRequired()])
     submit = SubmitField("Dodaj do biblioteki!")
-
-    def validate_book_title(self, title):
-        book = Book.query.filter_by(title=title.data).first()
-        if book is not None:
-            raise ValidationError("Książka o takim tytule już znajduje się już w bazie.")
 
 
 class ImportBooks(FlaskForm):
@@ -24,8 +25,10 @@ class ImportBooks(FlaskForm):
     inpublisher = StringField("Wydawca")
     subject = StringField("Kategoria")
     isbn = StringField("ISBN")
-    submit = SubmitField("Zatwierdź")
+    submit = SubmitField("Zatwierdź dane.")
 
 
-# To do:
-# class ShowAllBooks(FlaskForm):
+class FilterBooks(FlaskForm):
+    filter_a = StringField("Autor")
+    filter_c = StringField("Kategoria")
+    submit = SubmitField("Filtruj")

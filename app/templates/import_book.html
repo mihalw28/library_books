@@ -1,54 +1,21 @@
 {% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 
-{% block content %}
-    <h1>Aby zaimportować książki do biblioteki, wypęłnij formularz</h1>
-    <form action="" method="post" novalidate>
-        {{ form.hidden_tag() }}
-        <p> 
-            {{ form.intitle.label }}<br>
-            {{ form.intitle(size=32) }}
-            {% for error in form.intitle.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p> 
-            {{ form.inauthor.label }}<br>
-            {{ form.inauthor(size=32) }}
-            {% for error in form.inauthor.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p> 
-            {{ form.inpublisher.label }}<br>
-            {{ form.inpublisher(size=32) }}
-            {% for error in form.inpublisher.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p> 
-            {{ form.isbn.label }}<br>
-            {{ form.isbn(size=32) }}
-            {% for error in form.isbn.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p> 
-            {{ form.subject.label }}<br>
-            {{ form.subject(size=32) }}
-            {% for error in form.subject.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>{{ form.submit() }}</p>
-    </form>
+{% block app_content %}
+    <h1>Aby zaimportować książki do biblioteki, wypełnij formularz</h1>
+    <div class="row">
+        <div class="col-md-4">
+            {{ wtf.quick_form(form) }}
+        </div>
+    </div>
     <p>
-        {% if "{{ session['url'] }}" %}
+        {% if "url" in session %}
             <form method="POST" action="{{ url_for('import_all') }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"></input>
-                <button type="submit" class="btn btn-warning">Importuj</button>
+                <button type="submit" class="btn btn-success">Importuj</button>
             </form>
         {% else %}
-            <button type="submit" class="btn btn-success" disabled>Importuj</button>
+            <button type="submit" class="btn btn-warning" disabled>Importuj</button>
         {% endif %}
     </p>
 {% endblock %}
