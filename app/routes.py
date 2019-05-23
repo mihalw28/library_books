@@ -87,11 +87,7 @@ def import_books():
         isbn = form.isbn.data
 
         list_str = [title, author, publisher, subject, isbn]
-        for val, key in zip(list_str, keys):
-            if val == "":
-                del val, key
-            else:
-                new_list.append(f"{key}:{val}")
+        new_list = [f"{key}:{val}" for val, key in zip(list_str, keys) if val != ""]  # more pythonic than standard for loop
         url_rest = "+".join(new_list)
         url = base_url + url_rest
         session["url"] = url
@@ -141,14 +137,8 @@ def import_all():
 
 def add_to_db(title, description, a_strings, c_strings):
     """This function solves issues with data if there are many authors or categories."""
-    a_objects = []
-    c_objects = []
-    for auth in a_strings:
-        au = Author(full_name=auth)
-        a_objects.append(au)
-    for cat in c_strings:
-        cat = Category(category_name=cat)
-        c_objects.append(cat)
+    a_objects = [Author(full_name=auth) for auth in a_strings]
+    c_objects = [Category(category_name=cat) for cat in c_strings]
     book = Book(
         title=title,
         description=description,
