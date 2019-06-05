@@ -60,7 +60,7 @@ def add_book():
     if form.validate_on_submit():
         title_str = form.title.data
         description_str = form.description.data
-        a_list_str = form.author.data.split(", ")
+        a_list_str = [auth.strip() for auth in form.author.data.split(",")]
         c_list_str = form.category.data.split(", ")
         add_to_db(title_str, description_str, a_list_str, c_list_str)
         flash(
