@@ -6,6 +6,7 @@ from app.models import Book, Author, Category
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 
+
 class TestConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = "sqlite://"
@@ -69,9 +70,14 @@ class TestModels(TestBase):
         db.session.commit()
         self.assertEqual(Book.query.count(), 1)
         self.assertEqual(Book.query.first().title, "For Whom the Bell Toll")
-        self.assertEqual(Book.query.first().description, "It tells the story of Robert Jordan.")
-        self.assertEqual(Book.query.first().book_categories, [category, additional_category])
+        self.assertEqual(
+            Book.query.first().description, "It tells the story of Robert Jordan."
+        )
+        self.assertEqual(
+            Book.query.first().book_categories, [category, additional_category]
+        )
         self.assertEqual(Book.query.first().book_authors, [author, additional_author])
+
 
 if __name__ == "__main__":
     unittest.main(verbose=2)

@@ -10,6 +10,7 @@ app.db
 
 # __pychache__
 __pycache__
+.pytest_cache
 
 # vscode settings
 .vscode
